@@ -34,6 +34,11 @@
         android:id="@+id/action_setup_light_environment"
         android:title="setup DESFire Light environment"
         app:showAsAction="never"/>
+    
+    <item
+        android:id="@+id/action_setup_sun_environment"
+        android:title="setup SUN environment"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_export_text_file"
