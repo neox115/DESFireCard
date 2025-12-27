@@ -86,6 +86,9 @@ public class Constants {
     public static final byte NDEF_CONTAINER_FILE_NUMBER = (byte) 0x01;
     public static final byte NDEF_DATA_FILE_NUMBER = (byte) 0x02;
 
+    // SUN/SDM AES key (must match server SECRET_KEY "neox2onodalab051")
+    public static final byte[] SUN_AES_KEY = Utils.hexStringToByteArray("6E656F78326F6E6F64616C6162303531");
+
     /**
      * Transaction MAC feature
      */
