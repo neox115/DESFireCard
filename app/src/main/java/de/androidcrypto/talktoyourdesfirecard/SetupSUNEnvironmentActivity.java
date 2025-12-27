@@ -181,12 +181,13 @@ public class SetupSUNEnvironmentActivity extends AppCompatActivity implements Nf
         // Note: use createAStandardFile (without ISO file id) to avoid LENGTH_ERROR (0x7E)
         // on some DESFire EV3 variants when passing ISO file ids in the CREATE_STD_FILE command.
         writeToUiAppend("step 8: create NDEF CC (file 01) and NDEF data file (file 02)");
-        success = desfireEv3.createAStandardFile(
-            DesfireEv3.NDEF_FILE_01_NUMBER,
-            DesfireEv3.CommunicationSettings.Plain,
-            DesfireEv3.NDEF_FILE_01_ACCESS_RIGHTS,
-            DesfireEv3.NDEF_FILE_01_SIZE,
-            false
+        success = desfireEv3.createAStandardFileIso(
+        DesfireEv3.NDEF_FILE_01_NUMBER,
+        DesfireEv3.NDEF_FILE_01_ISO_NAME,
+        DesfireEv3.CommunicationSettings.Plain,
+        DesfireEv3.NDEF_FILE_01_ACCESS_RIGHTS,
+        DesfireEv3.NDEF_FILE_01_SIZE,   // 32
+        false                            // preEnableSdm: CC には不要
         );
         errorCode = desfireEv3.getErrorCode();
         errorCodeReason = desfireEv3.getErrorCodeReason();
@@ -196,18 +197,17 @@ public class SetupSUNEnvironmentActivity extends AppCompatActivity implements Nf
             writeToUiAppendBorderColor("create NDEF CC file FAILURE with error code: "
                     + EV3.getErrorCode(errorCode) + " = "
                     + errorCodeReason + ", aborted", COLOR_RED);
-            
             writeToUiAppend(desfireEv3.getLogData());
-
             return;
         }
 
+        // ★ データファイル (file 02) はこれまで通り non-ISO 版でOK
         success = desfireEv3.createAStandardFile(
-            DesfireEv3.NDEF_FILE_02_NUMBER,
-            DesfireEv3.CommunicationSettings.Plain,
-            DesfireEv3.NDEF_FILE_02_ACCESS_RIGHTS,
-            DesfireEv3.NDEF_FILE_02_SIZE,
-            true // preEnableSdm: allow SDM on this file
+                DesfireEv3.NDEF_FILE_02_NUMBER,
+                DesfireEv3.CommunicationSettings.Plain,
+                DesfireEv3.NDEF_FILE_02_ACCESS_RIGHTS,
+                DesfireEv3.NDEF_FILE_02_SIZE,
+                true // preEnableSdm: allow SDM on this file
         );
         errorCode = desfireEv3.getErrorCode();
         errorCodeReason = desfireEv3.getErrorCodeReason();
