@@ -3555,6 +3555,19 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             }
         });
 
+        // SUN environment setup
+        MenuItem mSetupSunEnvironment = menu.findItem(R.id.action_setup_sun_environment);
+        if (mSetupSunEnvironment != null) {
+            mSetupSunEnvironment.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Intent intent = new Intent(MainActivity.this, SetupSUNEnvironmentActivity.class);
+                    startActivity(intent);
+                    return false;
+                }
+            });
+        }
+
         MenuItem mExportTextFile = menu.findItem(R.id.action_export_text_file);
         mExportTextFile.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
