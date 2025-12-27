@@ -196,6 +196,9 @@ public class SetupSUNEnvironmentActivity extends AppCompatActivity implements Nf
             writeToUiAppendBorderColor("create NDEF CC file FAILURE with error code: "
                     + EV3.getErrorCode(errorCode) + " = "
                     + errorCodeReason + ", aborted", COLOR_RED);
+            
+            writeToUiAppend(desfireEv3.getLogData());
+
             return;
         }
 
