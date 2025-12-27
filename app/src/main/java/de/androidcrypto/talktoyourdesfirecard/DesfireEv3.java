@@ -133,6 +133,13 @@ public class DesfireEv3 {
     public static final byte[] NDEF_APPLICATION_IDENTIFIER = Utils.hexStringToByteArray("010000"); // this is the AID for NDEF application
     public static final byte[] NDEF_ISO_APPLICATION_IDENTIFIER = Utils.hexStringToByteArray("10E1"); // this is the ISO AID for NDEF application
     public static final byte[] NDEF_APPLICATION_DF_NAME = Utils.hexStringToByteArray("D2760000850101"); // this is the Data File name for NDEF application
+
+    // NDEF CC file (file 01)
+    public static final byte NDEF_FILE_01_NUMBER = (byte) 0x01;
+    public static final byte[] NDEF_FILE_01_ISO_NAME = Utils.hexStringToByteArray("03E1");
+    // free access for all except Change Access Rights (CAR uses key 0)
+    public static final byte[] NDEF_FILE_01_ACCESS_RIGHTS = Utils.hexStringToByteArray("E0EE");
+    // maximum size (bytes) of the NDEF CC file; actual content is shorter
     public static final int NDEF_FILE_01_SIZE = 32;
     private final byte[] NDEF_FILE_01_CONTENT_CONTAINER = Utils.hexStringToByteArray("000F20003A00340406E10401000000"); // 256 byte
     public static final byte NDEF_FILE_02_NUMBER = (byte) 0x02;
