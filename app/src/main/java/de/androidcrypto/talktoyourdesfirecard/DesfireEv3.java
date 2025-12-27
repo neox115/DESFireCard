@@ -960,7 +960,8 @@ public class DesfireEv3 {
         byte[] response;
 
         try {
-            apdu = wrapMessage(CREATE_STANDARD_FILE_COMMAND, commandParameter);
+            // Case 3 APDU (no Le) to avoid 0x917E length error on EV3
+            apdu = wrapMessageNoLe(CREATE_STANDARD_FILE_COMMAND, commandParameter);
             response = sendData(apdu);
         } catch (IOException e) {
             Log.e(TAG, methodName + " transceive failed, IOException:\n" + e.getMessage());
@@ -1044,10 +1045,12 @@ public class DesfireEv3 {
         byte[] apdu;
         byte[] response;
         try {
+            // Case 3 APDUs (no Le) for file creation, EV3 may return 0x917E if
+            // an unnecessary Le is present on CREATE_* commands.
             if (isStandardFile) {
-                apdu = wrapMessage(CREATE_STANDARD_FILE_COMMAND, commandParameter);
+                apdu = wrapMessageNoLe(CREATE_STANDARD_FILE_COMMAND, commandParameter);
             } else {
-                apdu = wrapMessage(CREATE_BACKUP_FILE_COMMAND, commandParameter);
+                apdu = wrapMessageNoLe(CREATE_BACKUP_FILE_COMMAND, commandParameter);
             }
             response = sendData(apdu);
         } catch (IOException e) {
@@ -10733,6 +10736,13 @@ fileSize: 128
     }
 
     private byte[] wrapMessage(byte command, byte[] parameters) throws IOException {
+        // ISO/IEC 7816-4 Case 3 / Case 4
+        // This helper always builds a "Case 4" APDU (with Le=0x00) which is fine
+        // for commands that expect response data (GET_VERSION, READ_DATA, ...).
+        // For commands that send data and do not expect any response data in the body
+        // (e.g. CREATE_STANDARD_FILE / CREATE_BACKUP_FILE / FORMAT_PICC), EV3 is
+        // stricter about the APDU case and may return 0x917E if Le is present.
+        // For those, use wrapMessageNoLe() below so the APDU becomes "Case 3".
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         stream.write((byte) 0x90);
         stream.write(command);
@@ -10743,6 +10753,23 @@ fileSize: 128
             stream.write(parameters);
         }
         stream.write((byte) 0x00);
+        return stream.toByteArray();
+    }
+
+    // Variant for ISO/IEC 7816-4 Case 3: command has a data field but does not
+    // expect any response data besides the status word. This omits Le so that
+    // the APDU length exactly matches CLA INS P1 P2 Lc Data and avoids 0x917E
+    // (Length error) on stricter EV3 firmware when creating files.
+    private byte[] wrapMessageNoLe(byte command, byte[] parameters) throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        stream.write((byte) 0x90);
+        stream.write(command);
+        stream.write((byte) 0x00);
+        stream.write((byte) 0x00);
+        if (parameters != null) {
+            stream.write((byte) parameters.length);
+            stream.write(parameters);
+        }
         return stream.toByteArray();
     }
 
