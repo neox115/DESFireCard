@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TalkToYourDESFireCard"
         tools:targetApi="31">
+
         <activity
             android:name=".CreateApplicationActivity"
             android:exported="false" />
@@ -33,12 +34,18 @@
         <activity
             android:name=".SetupLightEnvironmentActivity"
             android:exported="false" />
+
+        <!-- ★ ここを新しく追加 -->
+        <activity
+            android:name=".SetupSUNEnvironmentActivity"
+            android:exported="false" />
+        <!-- ★ ここまで -->
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
