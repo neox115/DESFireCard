@@ -952,8 +952,6 @@ public class DesfireEv3 {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(fileNumber);
         baos.write(isoFileId, 0, isoFileId.length);
-        baos.write((byte)0x00); // ISO options
-        baos.write((byte)0x00); // ISO file name length for EV3
         baos.write(commSettings);
         baos.write(accessRights, 0, accessRights.length);
         baos.write(fileSizeByte, 0, fileSizeByte.length);
