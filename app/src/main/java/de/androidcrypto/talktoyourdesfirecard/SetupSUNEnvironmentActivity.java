@@ -330,6 +330,77 @@ public class SetupSUNEnvironmentActivity extends AppCompatActivity implements Nf
     }
 
     /**
+     * デフォルトアプリ (AID 000000) 上で、
+     * non-ISO / access=FFFF / size=32 の標準ファイルを 1 つ作るテスト。
+     */
+    private void testCreateStdFileInDefaultApp() {
+        clearOutputFields();
+        writeToUiAppend("run testCreateStdFileInDefaultApp");
+
+        boolean success;
+        byte[] errorCode;
+        String errorCodeReason;
+
+        // T1) PICC を format（SUN セットアップと同じ）
+        writeToUiAppend("step T1: format the PICC using default master settings");
+        success = desfireD40.formatPicc();
+        errorCode = desfireD40.getErrorCode();
+        if (success) {
+            writeToUiAppendBorderColor("format of the PICC SUCCESS", COLOR_GREEN);
+        } else {
+            writeToUiAppendBorderColor("format of the PICC FAILURE, aborted", COLOR_RED);
+            return;
+        }
+
+        // T2) 必要ならデフォルトアプリ (000000) を選択
+        // ※ 多くの実装では FORMAT_PICC 後は自動的に PICC マスター (000000) が選択されているので、
+        //    ここは省略しても動く可能性が高いです。
+        //    もし DesfireEv3 に selectApplication(byte[] aid) などがあれば、適宜ここで呼んでください。
+        /*
+        writeToUiAppend("step T2: select default application (AID 000000)");
+        success = desfireEv3.selectApplication(new byte[]{0x00, 0x00, 0x00});
+        errorCode = desfireEv3.getErrorCode();
+        errorCodeReason = desfireEv3.getErrorCodeReason();
+        if (success) {
+            writeToUiAppendBorderColor("select default application SUCCESS", COLOR_GREEN);
+        } else {
+            writeToUiAppendBorderColor("select default application FAILURE with error code: "
+                    + EV3.getErrorCode(errorCode) + " = "
+                    + errorCodeReason + ", aborted", COLOR_RED);
+            return;
+        }
+        */
+
+        // T3) 認証不要(access=FFFF) の標準ファイルを 1 つ作成
+        writeToUiAppend("step T3: create simple standard data file in default application");
+
+        byte fileNo = 0x01; // シンプルなので file 01 固定
+        DesfireEv3.CommunicationSettings cs = DesfireEv3.CommunicationSettings.Plain;
+        byte[] accessRights = new byte[]{(byte) 0xFF, (byte) 0xFF}; // 全アクセス認証不要
+        int fileSize = 32;
+        boolean preEnableSdm = false;
+
+        success = desfireEv3.createAStandardFile(
+                fileNo,
+                cs,
+                accessRights,
+                fileSize,
+                preEnableSdm
+        );
+        errorCode = desfireEv3.getErrorCode();
+        errorCodeReason = desfireEv3.getErrorCodeReason();
+
+        if (success) {
+            writeToUiAppendBorderColor("create standard file in default app SUCCESS", COLOR_GREEN);
+        } else {
+            writeToUiAppendBorderColor("create standard file in default app FAILURE with error code: "
+                    + EV3.getErrorCode(errorCode) + " = "
+                    + errorCodeReason, COLOR_RED);
+            writeToUiAppend(desfireEv3.getLogData());
+        }
+    }
+
+    /**
      * Build the exact NDEF file data layout (including the 0x00 length prefix)
      * that writeToStandardFileUrlPlain() uses internally, for a given URL.
      */
@@ -421,8 +492,11 @@ public class SetupSUNEnvironmentActivity extends AppCompatActivity implements Nf
                 writeToUiAppend("tag id: " + Utils.bytesToHex(tagIdByte));
                 Log.d(TAG, "tag id: " + Utils.bytesToHex(tagIdByte));
                 writeToUiAppendBorderColor("The app and DESFire EV3 tag are ready to use", COLOR_GREEN);
-                runSetupSunEnvironment();
+                // デフォルトアプリ上で標準ファイル作成テストを実行
+                testCreateStdFileInDefaultApp();
 
+                // 本来の SUN/NDEF セットアップは一旦止めておく
+                // runSetupSunEnvironment();
             }
         } catch (IOException e) {
             writeToUiAppendBorderColor("IOException: " + e.getMessage(), COLOR_RED);
