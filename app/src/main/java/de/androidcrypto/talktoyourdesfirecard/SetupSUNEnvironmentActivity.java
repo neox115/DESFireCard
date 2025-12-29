@@ -493,10 +493,10 @@ public class SetupSUNEnvironmentActivity extends AppCompatActivity implements Nf
                 Log.d(TAG, "tag id: " + Utils.bytesToHex(tagIdByte));
                 writeToUiAppendBorderColor("The app and DESFire EV3 tag are ready to use", COLOR_GREEN);
                 // デフォルトアプリ上で標準ファイル作成テストを実行
-                testCreateStdFileInDefaultApp();
+                // testCreateStdFileInDefaultApp();
 
                 // 本来の SUN/NDEF セットアップは一旦止めておく
-                // runSetupSunEnvironment();
+                runSetupSunEnvironment();
             }
         } catch (IOException e) {
             writeToUiAppendBorderColor("IOException: " + e.getMessage(), COLOR_RED);
