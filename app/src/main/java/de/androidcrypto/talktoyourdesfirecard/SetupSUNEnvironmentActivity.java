@@ -178,16 +178,19 @@ public class SetupSUNEnvironmentActivity extends AppCompatActivity implements Nf
         }
 
         // 8) Create NDEF CC file (file 01) and NDEF data file (file 02, pre-enabled SDM)
-        // Note: use createAStandardFile (without ISO file id) to avoid LENGTH_ERROR (0x7E)
-        // on some DESFire EV3 variants when passing ISO file ids in the CREATE_STD_FILE command.
+        // CC ファイルは ISO File ID を使わず、標準ファイル (non-ISO) で作成します。
+        // これにより CREATE_STANDARD_FILE のパラメータ長を 7 バイト
+        // (fileNo + fileOption + accessRights(2) + fileSize(3)) に固定し、
+        // ISO 関連パラメータ由来の LENGTH_ERROR(0x7E) 要因を切り分けます。
         writeToUiAppend("step 8: create NDEF CC (file 01) and NDEF data file (file 02)");
-        success = desfireEv3.createAStandardFileIso(
-        DesfireEv3.NDEF_FILE_01_NUMBER,
-        DesfireEv3.NDEF_FILE_01_ISO_NAME,
-        DesfireEv3.CommunicationSettings.Plain,
-        DesfireEv3.NDEF_FILE_01_ACCESS_RIGHTS,
-        DesfireEv3.NDEF_FILE_01_SIZE,   // 32
-        false                            // preEnableSdm: CC には不要
+
+        // CC file (file 01): non-ISO, Plain, SDM 無効
+        success = desfireEv3.createAStandardFile(
+            DesfireEv3.NDEF_FILE_01_NUMBER,
+            DesfireEv3.CommunicationSettings.Plain,
+            DesfireEv3.NDEF_FILE_01_ACCESS_RIGHTS,
+            DesfireEv3.NDEF_FILE_01_SIZE,   // 32
+            false                            // preEnableSdm: CC には不要
         );
         errorCode = desfireEv3.getErrorCode();
         errorCodeReason = desfireEv3.getErrorCodeReason();
