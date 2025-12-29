@@ -954,6 +954,7 @@ public class DesfireEv3 {
         baos.write(isoFileId, 0, isoFileId.length);
         baos.write(commSettings);
         baos.write(accessRights, 0, accessRights.length);
+        baos.write(fileSizeByte, 0, fileSizeByte.length);
         byte[] commandParameter = baos.toByteArray();
         byte[] apdu;
         byte[] response;
@@ -1039,7 +1040,6 @@ public class DesfireEv3 {
         baos.write(fileNumber);
         baos.write(commSettings);
         baos.write(accessRights, 0, accessRights.length);
-        baos.write(fileSizeByte, 0, fileSizeByte.length);
         byte[] commandParameter = baos.toByteArray();
         byte[] apdu;
         byte[] response;
